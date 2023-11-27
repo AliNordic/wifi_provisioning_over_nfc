@@ -2,7 +2,7 @@
 This experimental sample demonstrates how you can provision the [nRF7002 DK](https://www.nordicsemi.com/Products/Development-hardware/nRF7002-DK) or the ([nRF5340 DK](https://www.nordicsemi.com/Products/Development-hardware/nrf5340-dk) + [nRF7002 EK](https://www.nordicsemi.com/Products/Development-hardware/nRF7002-EK) ) to a Wi-Fi Network using NFC.
 The sample uses the PSA Protected Storage service available in the TF-M implementation to store the credentials. 
 
-How to use:
+###How to use:
 
 1.	Connect the NFC antenna to your development kit. 
 2.	Build/flash the demo application to your development kit.
@@ -19,7 +19,7 @@ Supported build targets are :
 8.	Press on Write and tap the NFC Antenna on your development kit.
 9.	LED1 will turn on, indicating your board is provisioned to the network. 
 
-Limitations:
+###Limitations:
 
 *Tested on Android.
 

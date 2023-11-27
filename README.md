@@ -1,12 +1,15 @@
 # WIFI Provisioning Over NFC
 This experimental sample demonstrates how you can provision your nRF7002 DK or your  (nRF5340 DK + nRF7002 EK ) to your Wi-Fi Network using NFC.
 The sample uses the PSA Protected Storage service available in the TF-M implementation to store the credentials. 
+
 How to use:
+
 1.	Connect the NFC antenna to your development kit 
 2.	Flash the demo application to your development kit.
 Supported build targets are :
 
 •	nrf7002dk_nrf5340_cpuapp_ns 
+
 •	nrf5340dk_nrf5340_cpuapp_ns -DSHIELD=nrf7002ek 
 
 4.	Download NFC Tools, available on Android and iOS, on your smartphone or tablet.

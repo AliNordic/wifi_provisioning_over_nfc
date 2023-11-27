@@ -23,8 +23,8 @@ static struct net_if *iface;
 static struct net_mgmt_event_callback wifi_prov_mgmt_cb;
 
 /* An experimental function to parse NFC NDEF Wi-Fi record
-Assumtions:
-Authentican: WPA-2 Personal
+Assumptions:
+Authentication: WPA-2 Personal
 Encryption: AES
 TODO:
 1 - Support other modes
@@ -51,7 +51,7 @@ int parse_ndef_wifi_record(size_t payloadLength, struct wifi_credentials_persona
 	ptr_data += wifiConfig->header.ssid_len + 16;
 	wifiConfig->password_len = (((uint16_t) * (ptr_data)) << 8) | *(ptr_data + 1);
 	if (wifiConfig->password_len > WIFI_PSK_MAX_LEN){
-		LOG_ERR("SSID too long");
+		LOG_ERR("Password too long");
 	}
 	memcpy(wifiConfig->password, ptr_data + 2, wifiConfig->password_len);
 	wifiConfig->password[wifiConfig->password_len] = '\0';
@@ -68,7 +68,7 @@ static void wifi_mgmt_event_handler(struct net_mgmt_event_callback *cb, uint32_t
 		nfc_t4t_emulation_start();
 		break;
 	case NET_EVENT_WIFI_CONNECT_RESULT:
-		// Delete temporary credintials from application. Only TF-M should have access to
+		// Delete temporary credentials from the application. Only TF-M should have access to
 		// credentials
 		memset(&creds.password, 0, creds.password_len);
 		memset(&creds.password_len, 0, sizeof(unsigned int));

@@ -21,7 +21,5 @@ Supported build targets are :
 
 ### Limitations:
 
-*Tested on Android.
-
 *Only WPA2-Personal support is implemented.
 

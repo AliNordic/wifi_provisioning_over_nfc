@@ -31,14 +31,18 @@ TODO:
 */
 int parse_ndef_wifi_record(size_t payloadLength, struct wifi_credentials_personal *wifiConfig)
 {
+	int i=0;
 	uint8_t *ptr_data = (uint8_t *)ndef_msg_buf;
 
 	// Getting the Authentication and encryption type
 	//  TODO: Support other modes and extract from data
 	wifiConfig->header.type = WIFI_SECURITY_TYPE_PSK;
-
 	// Getting the SSID
-	ptr_data += 41;
+	
+	while (ndef_msg_buf[i]!='E'){
+		i++;
+	}
+	ptr_data += i+1;
 	wifiConfig->header.ssid_len = (((uint16_t) * (ptr_data)) << 8) | *(ptr_data + 1);
 	if (wifiConfig->header.ssid_len > WIFI_SSID_MAX_LEN){
 		LOG_ERR("SSID too long");

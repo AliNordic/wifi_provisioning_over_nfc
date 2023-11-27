@@ -20,5 +20,8 @@ Supported build targets are :
 9.	LED1 will turn on, indicating your board is provisioned to the network. 
 
 Limitations:
+
 *Tested on Android.
+
 *Only WPA2-Personal support is implemented.
+

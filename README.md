@@ -1,5 +1,5 @@
-# WIFI Provisioning Over NFC
-This experimental sample demonstrates how you can provision the nRF7002 DK or the (nRF5340 DK + nRF7002 EK ) to a Wi-Fi Network using NFC.
+# Wi-Fi Provisioning Over NFC
+This experimental sample demonstrates how you can provision the [nRF7002 DK](https://www.nordicsemi.com/Products/Development-hardware/nRF7002-DK) or the ([nRF5340 DK](https://www.nordicsemi.com/Products/Development-hardware/nrf5340-dk) + [nRF7002 EK](https://www.nordicsemi.com/Products/Development-hardware/nRF7002-EK) ) to a Wi-Fi Network using NFC.
 The sample uses the PSA Protected Storage service available in the TF-M implementation to store the credentials. 
 
 How to use:

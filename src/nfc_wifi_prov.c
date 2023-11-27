@@ -46,6 +46,7 @@ int parse_ndef_wifi_record(size_t payloadLength, struct wifi_credentials_persona
 	wifiConfig->header.ssid_len = (((uint16_t) * (ptr_data)) << 8) | *(ptr_data + 1);
 	if (wifiConfig->header.ssid_len > WIFI_SSID_MAX_LEN){
 		LOG_ERR("SSID too long");
+		return -1;
 	}
 	memcpy(wifiConfig->header.ssid, ptr_data + 2, wifiConfig->header.ssid_len);
 	wifiConfig->header.ssid[wifiConfig->header.ssid_len] = '\0';
@@ -56,6 +57,7 @@ int parse_ndef_wifi_record(size_t payloadLength, struct wifi_credentials_persona
 	wifiConfig->password_len = (((uint16_t) * (ptr_data)) << 8) | *(ptr_data + 1);
 	if (wifiConfig->password_len > WIFI_PSK_MAX_LEN){
 		LOG_ERR("Password too long");
+		return -1; 
 	}
 	memcpy(wifiConfig->password, ptr_data + 2, wifiConfig->password_len);
 	wifiConfig->password[wifiConfig->password_len] = '\0';

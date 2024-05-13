@@ -4,11 +4,12 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 #include <zephyr/kernel.h>
-#include <dk_buttons_and_leds.h>
+#include <zephyr/logging/log.h>
 #include <zephyr/net/net_mgmt.h>
 #include <zephyr/net/net_event.h>
 #include <zephyr/net/wifi_mgmt.h>
 #include <net/wifi_mgmt_ext.h>
+#include <dk_buttons_and_leds.h>
 #include "nfc_wifi_prov.h"
 #include "udp_client.h"
 LOG_MODULE_REGISTER(wifi_prov_over_nfc, LOG_LEVEL_INF);
@@ -56,12 +57,12 @@ int main(void)
 	if (nfc_provision() < 0) {
 		LOG_ERR("Failed to start NFC provisioning");
 	}
-	// Apply already stored credentials, if any exists
+	/* Apply already stored credentials, if any exists */
 	struct net_if *iface = net_if_get_first_by_type(&NET_L2_GET_NAME(ETHERNET));
 	net_mgmt(NET_REQUEST_WIFI_CONNECT_STORED, iface, NULL, 0);
 
 	k_sem_take(&run_wifi_app, K_FOREVER);
-	// Add your Wi-Fi application after this point
+	/*  Add your Wi-Fi application after this point */
 	start_udp_client();
 	return 0;
 }

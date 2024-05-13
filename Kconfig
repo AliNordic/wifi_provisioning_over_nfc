@@ -1,0 +1,35 @@
+#
+# Copyright (c) 2024 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+menu "Wi-Fi Provisioning Over NFC"
+
+module = WIFI_PROVISIONING_OVER_NFC
+module-str = wifi provisioning over NFC
+
+config PRESS_HOLD_RELEASE_TIME
+	int "Time to press-hold&release to erase stored credentials stored in TF-M"
+	default 8
+
+config UDP_ECHO_SERVER_HOSTNAME
+	string "UDP echo server to send a message to"
+	default "udp-echo.nordicsemi.academy"
+
+config UDP_ECHO_SERVER_PORT
+	string "UDP echo server port number"
+	default "2444"
+
+config MESSAGE_TO_SEND
+	string "Message to send to the echo server"
+	help
+	  This could be any string you wish to send to the echo server.
+	default "Hello from nRF70 Series"
+
+config REPLY_BUFFER_SIZE
+	int "Buffer size for the received message from the server"
+	default 256
+
+endmenu
+
+source "Kconfig.zephyr"

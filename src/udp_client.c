@@ -13,19 +13,15 @@
 #include <zephyr/net/wifi.h>
 #include <zephyr/net/wifi_mgmt.h>
 #include <zephyr/net/net_mgmt.h>
+#include <zephyr/net/socket.h>
 #include <dk_buttons_and_leds.h>
 #include "udp_client.h"
-#include <zephyr/net/socket.h>
 
-#define SERVER_HOSTNAME "udp-echo.nordicsemi.academy"
-#define SERVER_PORT	"2444"
-#define MESSAGE_SIZE	256
-#define MESSAGE_TO_SEND "Hello from nRF70 Series"
-#define SSTRLEN(s)	(sizeof(s) - 1)
+#define SSTRLEN(s) (sizeof(s) - 1)
 static int sock;
 static struct sockaddr_storage server;
 
-static uint8_t recv_buf[MESSAGE_SIZE];
+static uint8_t recv_buf[CONFIG_REPLY_BUFFER_SIZE];
 LOG_MODULE_REGISTER(udp_connection, LOG_LEVEL_INF);
 
 static int server_resolve(void)
@@ -37,7 +33,8 @@ static int server_resolve(void)
 		.ai_socktype = SOCK_DGRAM,
 	};
 
-	err = getaddrinfo(SERVER_HOSTNAME, SERVER_PORT, &hints, &result);
+	err = getaddrinfo(CONFIG_UDP_ECHO_SERVER_HOSTNAME, CONFIG_UDP_ECHO_SERVER_PORT, &hints,
+			  &result);
 	if (err != 0) {
 		LOG_INF("getaddrinfo() failed, err: %d", err);
 		return -EIO;
@@ -83,14 +80,13 @@ static int server_connect(void)
 }
 static void button_handler(uint32_t button_state, uint32_t has_changed)
 {
-	/* STEP 8 - Send a message every time button 1 is pressed */
 	if (has_changed & DK_BTN1_MSK && button_state & DK_BTN1_MSK) {
-		int err = send(sock, MESSAGE_TO_SEND, SSTRLEN(MESSAGE_TO_SEND), 0);
+		int err = send(sock, CONFIG_MESSAGE_TO_SEND, SSTRLEN(CONFIG_MESSAGE_TO_SEND), 0);
 		if (err < 0) {
 			LOG_INF("Failed to send message, %d", errno);
 			return;
 		}
-		LOG_INF("Successfully sent message: %s", MESSAGE_TO_SEND);
+		LOG_INF("Successfully sent message: %s", CONFIG_MESSAGE_TO_SEND);
 	}
 }
 static struct button_handler button_cb_client = {

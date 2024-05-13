@@ -3,14 +3,14 @@
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
-#include <zephyr/kernel.h>
 #include <stdbool.h>
-#include <nfc_t4t_lib.h>
+#include <zephyr/kernel.h>
+#include <zephyr/logging/log.h>
 #include <zephyr/net/net_if.h>
 #include <zephyr/net/wifi.h>
 #include <zephyr/net/wifi_mgmt.h>
-#include <zephyr/logging/log.h>
 #include <net/wifi_credentials.h>
+#include <nfc_t4t_lib.h>
 #include <dk_buttons_and_leds.h>
 #include <net/wifi_mgmt_ext.h>
 LOG_MODULE_REGISTER(nfc_prov, LOG_LEVEL_INF);
@@ -18,8 +18,7 @@ LOG_MODULE_REGISTER(nfc_prov, LOG_LEVEL_INF);
 static struct wifi_credentials_personal creds;
 static uint8_t ndef_msg_buf[CONFIG_NDEF_FILE_SIZE]; /**< Buffer for NDEF file. */
 static struct net_if *iface;
-#define L4_EVENT_MASK		   (NET_EVENT_L4_CONNECTED | NET_EVENT_L4_DISCONNECTED)
-#define PRESS_HOLD_RELEASE_TIMEOUT K_SECONDS(8)
+#define L4_EVENT_MASK (NET_EVENT_L4_CONNECTED | NET_EVENT_L4_DISCONNECTED)
 struct k_timer press_hold_release_timer;
 static void erase_all_credentials(void *cb_arg, const char *ssid, size_t ssid_len)
 {
@@ -30,16 +29,17 @@ static void button_handler_remove_cred(uint32_t button_state, uint32_t has_chang
 {
 	if (DK_BTN1_MSK & has_changed) {
 		if (DK_BTN1_MSK & button_state) {
-			// Button pressed. Start timer
-			k_timer_start(&press_hold_release_timer, PRESS_HOLD_RELEASE_TIMEOUT,
-				      K_NO_WAIT);
+			/* Button pressed. Start timer */
+			k_timer_start(&press_hold_release_timer,
+				      K_SECONDS(CONFIG_PRESS_HOLD_RELEASE_TIME), K_NO_WAIT);
 		} else {
-			// Button released. Check if elapsed time is >= PRESS_HOLD_RELEASE_TIMEOUT
+			/* Button released. Check if elapsed time is >=
+			 * CONFIG_PRESS_HOLD_RELEASE_TIME */
 			if (k_timer_status_get(&press_hold_release_timer) > 0) {
 				LOG_INF("Long press detected! erasing all credential");
 				wifi_credentials_for_each_ssid(erase_all_credentials, NULL);
 				net_mgmt(NET_REQUEST_WIFI_DISCONNECT, iface, NULL, 0);
-				// Time elapsed is < PRESS_HOLD_RELEASE_TIMEOUT. Stop timer
+				/* Time elapsed is < CONFIG_PRESS_HOLD_RELEASE_TIME. Stop timer */
 			} else {
 				k_timer_stop(&press_hold_release_timer);
 			}
@@ -56,17 +56,17 @@ Assumptions:
 Authentication: WPA-2 Personal
 Encryption: AES
 TODO:
-1 - Support other modes
+Support other modes
 */
 int parse_ndef_wifi_record(size_t payloadLength, struct wifi_credentials_personal *wifiConfig)
 {
 	int i = 0;
 	uint8_t *ptr_data = (uint8_t *)ndef_msg_buf;
 
-	// Getting the Authentication and encryption type
-	//  TODO: Support other modes and extract from data
+	/* Getting the Authentication and encryption type
+	  TODO: Support other modes and extract from data*/
 	wifiConfig->header.type = WIFI_SECURITY_TYPE_PSK;
-	// Getting the SSID
+	/* Getting the SSID */
 
 	while (ndef_msg_buf[i] != 'E') {
 		i++;
@@ -81,7 +81,7 @@ int parse_ndef_wifi_record(size_t payloadLength, struct wifi_credentials_persona
 	wifiConfig->header.ssid[wifiConfig->header.ssid_len] = '\0';
 	LOG_DBG("SSID: %s SSID len %d\n", wifiConfig->header.ssid, wifiConfig->header.ssid_len);
 
-	// Getting the password
+	/* Getting the password */
 	ptr_data += wifiConfig->header.ssid_len + 16;
 	wifiConfig->password_len = (((uint16_t) * (ptr_data)) << 8) | *(ptr_data + 1);
 	if (wifiConfig->password_len > WIFI_PSK_MAX_LEN) {
@@ -103,14 +103,14 @@ static void wifi_mgmt_event_handler(struct net_mgmt_event_callback *cb, uint32_t
 		nfc_t4t_emulation_start();
 		break;
 	case NET_EVENT_L4_CONNECTED:
-		// Delete temporary credentials from the application. Only TF-M should have access
-		// to credentials
+		/* Delete temporary credentials from the application. Only TF-M should have access
+		 to credentials */
 		memset(&creds.password, 0, creds.password_len);
 		memset(&creds.password_len, 0, sizeof(unsigned int));
 		memset(&creds.header.ssid, 0, creds.header.ssid_len);
 		memset(&creds.header.ssid_len, 0, sizeof(unsigned int));
 		memset(ndef_msg_buf, 0, CONFIG_NDEF_FILE_SIZE);
-		// Stop NFC to prevent power waste
+		/* Stop NFC to prevent power waste */
 		LOG_INF("Turning off NFC");
 		nfc_t4t_emulation_stop();
 		break;
@@ -130,15 +130,15 @@ static void nfc_callback(void *context, nfc_t4t_event_t event, const uint8_t *da
 	ARG_UNUSED(flags);
 	switch (event) {
 	case NFC_T4T_EVENT_FIELD_ON:
-		// do nothing
+		/* do nothing */
 		break;
 
 	case NFC_T4T_EVENT_FIELD_OFF:
-		// do nothing
+		/* do nothing */
 		break;
 
 	case NFC_T4T_EVENT_NDEF_READ:
-		// do nothing
+		/* do nothing */
 		break;
 
 	case NFC_T4T_EVENT_NDEF_UPDATED:
@@ -187,7 +187,7 @@ int nfc_provision(void)
 		printk("Cannot start emulation!\n");
 		return -1;
 	}
-	// Remove credentials on long button press
+	/* Remove credentials on long button press */
 	dk_button_handler_add(&button_cb_nfc);
 	net_mgmt_init_event_callback(&wifi_prov_mgmt_cb, wifi_mgmt_event_handler, L4_EVENT_MASK);
 

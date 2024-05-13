@@ -6,7 +6,7 @@
 #ifndef _UDP_CLIENT_H_
 #define _UDP_CLIENT_H_
 /**
- * @brief   Function for pinging a UDP echo server
+ * @brief   Function for sending a message to a UDP echo server
  */
 int start_udp_client(void);
 #endif /* _UDP_CLIENT_H_ */

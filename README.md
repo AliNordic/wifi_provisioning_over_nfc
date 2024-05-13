@@ -27,7 +27,7 @@ Supported build targets are :
 [00:02:31.407,470] <inf> udp_connection: Successfully sent message: Hello from nRF70 Series
 [00:02:31.590,454] <inf> udp_connection: Data received from the server: (Time: 2024-05-13 07:58:12 Message: Hello from nRF70 Series)
 ```
-Note: 
+**Note:** 
 Pressing&holding button1 for 8 seconds, then releasing it will erase all stored credentials in the device. The device can then be provisioned with another network
 
 ### Limitations:

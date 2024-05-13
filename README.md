@@ -1,5 +1,5 @@
 # Wi-Fi Provisioning Over NFC
-This experimental sample demonstrates how you can provision the [nRF7002 DK](https://www.nordicsemi.com/Products/Development-hardware/nRF7002-DK) or the ([nRF5340 DK](https://www.nordicsemi.com/Products/Development-hardware/nrf5340-dk) + [nRF7002 EK](https://www.nordicsemi.com/Products/Development-hardware/nRF7002-EK) ) to a Wi-Fi Network using NFC.
+This **experimental** sample demonstrates how you can provision the [nRF7002 DK](https://www.nordicsemi.com/Products/Development-hardware/nRF7002-DK) or the ([nRF5340 DK](https://www.nordicsemi.com/Products/Development-hardware/nrf5340-dk) + [nRF7002 EK](https://www.nordicsemi.com/Products/Development-hardware/nRF7002-EK) ) to a Wi-Fi Network using NFC.
 The sample uses the PSA Protected Storage service available in the TF-M implementation to store the credentials. 
 
 ### How to use:
@@ -27,6 +27,8 @@ Supported build targets are :
 [00:02:31.407,470] <inf> udp_connection: Successfully sent message: Hello from nRF70 Series
 [00:02:31.590,454] <inf> udp_connection: Data received from the server: (Time: 2024-05-13 07:58:12 Message: Hello from nRF70 Series)
 ```
+**Note:** 
+Pressing&holding button1 for 8 seconds, then releasing it will erase all stored credentials in the device. The device can then be provisioned with another network
 
 ### Limitations:
 

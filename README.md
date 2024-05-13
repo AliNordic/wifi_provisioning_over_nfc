@@ -21,10 +21,12 @@ Supported build targets are :
 10. A UDP Client will start when a Wi-Fi connection is established. 
 11. Press button 1 on the board.
 12. A message is sent to a UDP echo server each time you press the button. The UDP echo server replies back with the current time at the server and appends the original message received.
-```[00:02:28.396,942] <inf> udp_connection: Successfully connected to server
+```
+[00:02:28.396,942] <inf> udp_connection: Successfully connected to server
 [00:02:28.396,942] <inf> udp_connection: Press button 1 on your DK to send your message
 [00:02:31.407,470] <inf> udp_connection: Successfully sent message: Hello from nRF70 Series
-[00:02:31.590,454] <inf> udp_connection: Data received from the server: (Time: 2024-05-13 07:58:12 Message: Hello from nRF70 Series)```
+[00:02:31.590,454] <inf> udp_connection: Data received from the server: (Time: 2024-05-13 07:58:12 Message: Hello from nRF70 Series)
+```
 
 ### Limitations:
 

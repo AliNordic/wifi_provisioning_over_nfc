@@ -17,10 +17,9 @@ LOG_MODULE_REGISTER(nfc_prov, LOG_LEVEL_INF);
 static struct wifi_credentials_personal creds;
 static uint8_t ndef_msg_buf[CONFIG_NDEF_FILE_SIZE]; /**< Buffer for NDEF file. */
 static struct net_if *iface;
-#define WIFI_PROV_MGMT_EVENTS (NET_EVENT_WIFI_DISCONNECT_RESULT | NET_EVENT_WIFI_CONNECT_RESULT)
+#define L4_EVENT_MASK (NET_EVENT_L4_CONNECTED | NET_EVENT_L4_DISCONNECTED)
 
 static struct net_mgmt_event_callback wifi_prov_mgmt_cb;
-
 /* An experimental function to parse NFC NDEF Wi-Fi record
 Assumptions:
 Authentication: WPA-2 Personal
@@ -30,20 +29,20 @@ TODO:
 */
 int parse_ndef_wifi_record(size_t payloadLength, struct wifi_credentials_personal *wifiConfig)
 {
-	int i=0;
+	int i = 0;
 	uint8_t *ptr_data = (uint8_t *)ndef_msg_buf;
 
 	// Getting the Authentication and encryption type
 	//  TODO: Support other modes and extract from data
 	wifiConfig->header.type = WIFI_SECURITY_TYPE_PSK;
 	// Getting the SSID
-	
-	while (ndef_msg_buf[i]!='E'){
+
+	while (ndef_msg_buf[i] != 'E') {
 		i++;
 	}
-	ptr_data += i+1;
+	ptr_data += i + 1;
 	wifiConfig->header.ssid_len = (((uint16_t) * (ptr_data)) << 8) | *(ptr_data + 1);
-	if (wifiConfig->header.ssid_len > WIFI_SSID_MAX_LEN){
+	if (wifiConfig->header.ssid_len > WIFI_SSID_MAX_LEN) {
 		LOG_ERR("SSID too long");
 		return -1;
 	}
@@ -54,9 +53,9 @@ int parse_ndef_wifi_record(size_t payloadLength, struct wifi_credentials_persona
 	// Getting the password
 	ptr_data += wifiConfig->header.ssid_len + 16;
 	wifiConfig->password_len = (((uint16_t) * (ptr_data)) << 8) | *(ptr_data + 1);
-	if (wifiConfig->password_len > WIFI_PSK_MAX_LEN){
+	if (wifiConfig->password_len > WIFI_PSK_MAX_LEN) {
 		LOG_ERR("Password too long");
-		return -1; 
+		return -1;
 	}
 	memcpy(wifiConfig->password, ptr_data + 2, wifiConfig->password_len);
 	wifiConfig->password[wifiConfig->password_len] = '\0';
@@ -68,13 +67,13 @@ static void wifi_mgmt_event_handler(struct net_mgmt_event_callback *cb, uint32_t
 				    struct net_if *iface)
 {
 	switch (mgmt_event) {
-	case NET_EVENT_WIFI_DISCONNECT_RESULT:
+	case NET_EVENT_L4_DISCONNECTED:
 		LOG_INF("Turning on NFC");
 		nfc_t4t_emulation_start();
 		break;
-	case NET_EVENT_WIFI_CONNECT_RESULT:
-		// Delete temporary credentials from the application. Only TF-M should have access to
-		// credentials
+	case NET_EVENT_L4_CONNECTED:
+		// Delete temporary credentials from the application. Only TF-M should have access
+		// to credentials
 		memset(&creds.password, 0, creds.password_len);
 		memset(&creds.password_len, 0, sizeof(unsigned int));
 		memset(&creds.header.ssid, 0, creds.header.ssid_len);
@@ -114,7 +113,8 @@ static void nfc_callback(void *context, nfc_t4t_event_t event, const uint8_t *da
 	case NFC_T4T_EVENT_NDEF_UPDATED:
 		if (data_length > 0) {
 			if (parse_ndef_wifi_record(data_length, &creds) < 0) {
-				LOG_ERR("Error parsing NFC data or unsupported authentication type");
+				LOG_ERR("Error parsing NFC data or unsupported authentication "
+					"type");
 				return;
 			}
 			LOG_HEXDUMP_DBG(data, data_length, "NFC RECORD: ");
@@ -157,8 +157,7 @@ int nfc_provision(void)
 		return -1;
 	}
 
-	net_mgmt_init_event_callback(&wifi_prov_mgmt_cb, wifi_mgmt_event_handler,
-				     WIFI_PROV_MGMT_EVENTS);
+	net_mgmt_init_event_callback(&wifi_prov_mgmt_cb, wifi_mgmt_event_handler, L4_EVENT_MASK);
 
 	net_mgmt_add_event_callback(&wifi_prov_mgmt_cb);
 	return 0;

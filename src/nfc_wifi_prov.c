@@ -11,6 +11,7 @@
 #include <zephyr/net/wifi_mgmt.h>
 #include <zephyr/logging/log.h>
 #include <net/wifi_credentials.h>
+#include <dk_buttons_and_leds.h>
 #include <net/wifi_mgmt_ext.h>
 LOG_MODULE_REGISTER(nfc_prov, LOG_LEVEL_INF);
 
@@ -18,7 +19,36 @@ static struct wifi_credentials_personal creds;
 static uint8_t ndef_msg_buf[CONFIG_NDEF_FILE_SIZE]; /**< Buffer for NDEF file. */
 static struct net_if *iface;
 #define L4_EVENT_MASK (NET_EVENT_L4_CONNECTED | NET_EVENT_L4_DISCONNECTED)
+#define PRESS_HOLD_RELEASE_TIMEOUT    K_SECONDS(8)
+struct k_timer press_hold_release_timer;
+static void erase_all_credentials(void *cb_arg, const char *ssid, size_t ssid_len)
+{
+	wifi_credentials_delete_by_ssid(ssid, ssid_len);
+}
 
+static void button_handler_remove_cred(uint32_t button_state, uint32_t has_changed)
+{
+    if (DK_BTN1_MSK & has_changed) {
+        if (DK_BTN1_MSK & button_state) {
+            // Button pressed. Start timer  
+            k_timer_start(&press_hold_release_timer, PRESS_HOLD_RELEASE_TIMEOUT, K_NO_WAIT);
+        } else {
+            // Button released. Check if elapsed time is >= PRESS_HOLD_RELEASE_TIMEOUT 
+            if (k_timer_status_get(&press_hold_release_timer) > 0) {
+                LOG_INF("Long press detected! erasing all credential");
+				wifi_credentials_for_each_ssid(erase_all_credentials, NULL);
+				net_mgmt(NET_REQUEST_WIFI_DISCONNECT, iface, NULL, 0);
+			// Time elapsed is < PRESS_HOLD_RELEASE_TIMEOUT. Stop timer
+            } else {
+                k_timer_stop(&press_hold_release_timer);
+            }
+        }
+    }
+}
+
+static struct button_handler button_cb_nfc = {
+	.cb = button_handler_remove_cred,
+};
 static struct net_mgmt_event_callback wifi_prov_mgmt_cb;
 /* An experimental function to parse NFC NDEF Wi-Fi record
 Assumptions:
@@ -156,7 +186,8 @@ int nfc_provision(void)
 		printk("Cannot start emulation!\n");
 		return -1;
 	}
-
+	// Remove credentials on long button press
+	dk_button_handler_add(&button_cb_nfc);
 	net_mgmt_init_event_callback(&wifi_prov_mgmt_cb, wifi_mgmt_event_handler, L4_EVENT_MASK);
 
 	net_mgmt_add_event_callback(&wifi_prov_mgmt_cb);

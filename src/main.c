@@ -44,7 +44,9 @@ int main(void)
 	if (dk_leds_init() != 0) {
 		LOG_ERR("Failed to initialize the LED library");
 	}
-
+	if (dk_buttons_init(NULL) != 0) {
+		LOG_ERR("Failed to initialize the buttons library");
+	}
 	/* Sleep to allow initialization of Wi-Fi driver */
 	k_sleep(K_SECONDS(1));
 

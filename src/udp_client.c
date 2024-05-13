@@ -93,14 +93,14 @@ static void button_handler(uint32_t button_state, uint32_t has_changed)
 		LOG_INF("Successfully sent message: %s", MESSAGE_TO_SEND);
 	}
 }
-
+static struct button_handler button_cb_client = {
+	.cb = button_handler,
+};
 int start_udp_client(void)
 {
 	int received;
 
-	if (dk_buttons_init(button_handler) != 0) {
-		LOG_ERR("Failed to initialize the buttons library");
-	}
+	dk_button_handler_add(&button_cb_client);
 
 	if (server_resolve() != 0) {
 		LOG_INF("Failed to resolve server name");

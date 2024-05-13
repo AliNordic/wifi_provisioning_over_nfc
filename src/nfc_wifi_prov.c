@@ -1,9 +1,8 @@
 /*
- * Copyright (c) 2023 Nordic Semiconductor ASA
+ * Copyright (c) 2024 Nordic Semiconductor ASA
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
-
 #include <zephyr/kernel.h>
 #include <stdbool.h>
 #include <nfc_t4t_lib.h>

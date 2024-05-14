@@ -18,11 +18,11 @@
 #include "udp_client.h"
 
 #define SSTRLEN(s) (sizeof(s) - 1)
+LOG_MODULE_REGISTER(udp_connection, LOG_LEVEL_INF);
+
 static int sock;
 static struct sockaddr_storage server;
-
 static uint8_t recv_buf[CONFIG_REPLY_BUFFER_SIZE];
-LOG_MODULE_REGISTER(udp_connection, LOG_LEVEL_INF);
 
 static int server_resolve(void)
 {
@@ -108,7 +108,7 @@ int start_udp_client(void)
 		return 0;
 	}
 
-	LOG_INF("Press button 1 on your DK to send your message");
+	LOG_INF("Press Button1 on your DK to send your message");
 
 	while (1) {
 		received = recv(sock, recv_buf, sizeof(recv_buf) - 1, 0);

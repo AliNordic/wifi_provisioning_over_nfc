@@ -13,13 +13,16 @@
 #include <nfc_t4t_lib.h>
 #include <dk_buttons_and_leds.h>
 #include <net/wifi_mgmt_ext.h>
+
+
+#define L4_EVENT_MASK (NET_EVENT_L4_CONNECTED | NET_EVENT_L4_DISCONNECTED)
 LOG_MODULE_REGISTER(nfc_prov, LOG_LEVEL_INF);
 
 static struct wifi_credentials_personal creds;
 static uint8_t ndef_msg_buf[CONFIG_NDEF_FILE_SIZE]; /**< Buffer for NDEF file. */
 static struct net_if *iface;
-#define L4_EVENT_MASK (NET_EVENT_L4_CONNECTED | NET_EVENT_L4_DISCONNECTED)
 struct k_timer press_hold_release_timer;
+
 static void erase_all_credentials(void *cb_arg, const char *ssid, size_t ssid_len)
 {
 	wifi_credentials_delete_by_ssid(ssid, ssid_len);
@@ -54,9 +57,6 @@ static struct net_mgmt_event_callback wifi_prov_mgmt_cb;
 /* An experimental function to parse NFC NDEF Wi-Fi record
 Assumptions:
 Authentication: WPA-2 Personal
-Encryption: AES
-TODO:
-Support other modes
 */
 int parse_ndef_wifi_record(size_t payloadLength, struct wifi_credentials_personal *wifiConfig)
 {

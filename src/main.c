@@ -12,12 +12,11 @@
 #include <dk_buttons_and_leds.h>
 #include "nfc_wifi_prov.h"
 #include "udp_client.h"
-LOG_MODULE_REGISTER(wifi_prov_over_nfc, LOG_LEVEL_INF);
 
 #define L4_EVENT_MASK (NET_EVENT_L4_CONNECTED | NET_EVENT_L4_DISCONNECTED)
+LOG_MODULE_REGISTER(wifi_prov_over_nfc, LOG_LEVEL_INF);
 
 static struct net_mgmt_event_callback mgmt_cb;
-
 static K_SEM_DEFINE(run_wifi_app, 0, 1);
 
 static void net_mgmt_event_handler(struct net_mgmt_event_callback *cb, uint32_t mgmt_event,
